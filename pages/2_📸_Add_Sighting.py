@@ -30,17 +30,22 @@ def main():
 
         submitted = st.form_submit_button("LOG SIGHTING 🚀")
 
-        if submitted:
-            if not uploaded_file:
-                st.error("Please upload a photo.")
-            elif not brand:
-                st.error("Please enter a brand.")
-            elif not model:
-                st.error("Please enter a model name.")
-            else:
-                img_path = save_uploaded_image(uploaded_file)
-                entry = add_entry(brand, model, rarity, img_path)
-                st.success(f"Secured {entry['brand']} {entry['name']}!")
+       if submitted:
+    if not uploaded_file:
+        st.error("Please upload a photo.")
+    elif not brand:
+        st.error("Please enter a brand.")
+    elif not model:
+        st.error("Please enter a model name.")
+    else:
+        img_path = save_uploaded_image(uploaded_file)
+        entry = add_entry(brand, model, rarity, img_path)
+
+        st.success(f"Secured {entry['brand']} {entry['name']}!")
+
+        # 🎉 Confetti animation
+        st.snow()
+
 
 if __name__ == "__main__":
     main()
