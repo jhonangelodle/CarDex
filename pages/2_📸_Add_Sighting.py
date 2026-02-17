@@ -1,31 +1,28 @@
 import streamlit as st
-from utils.db import add_entry
-from utils.images import save_uploaded_image
 
-st.set_page_config(page_title="Add Sighting", page_icon="📸")
+def show_new_entry_banner():
+    st.markdown(
+        """
+        <div style="
+            padding: 12px 20px;
+            background: linear-gradient(90deg, #FF4B4B, #FF8A00);
+            color: white;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+            animation: slideDown 0.6s ease-out;
+        ">
+            🚗 New Entry Registered!
+        </div>
 
-st.title("📸 Add a New Car Sighting")
-
-with st.form("add_car_form"):
-    brand = st.text_input("Brand")
-    model = st.text_input("Model")
-    rarity = st.selectbox("Rarity", ["Common", "Uncommon", "Rare", "Legendary", "Unicorn"])
-    uploaded_file = st.file_uploader("Upload a photo", type=["jpg", "jpeg", "png"])
-
-    submitted = st.form_submit_button("Log Sighting")
-
-if submitted:
-    if not uploaded_file:
-        st.error("Please upload a photo.")
-    elif not brand:
-        st.error("Please enter a brand.")
-    elif not model:
-        st.error("Please enter a model name.")
-    else:
-        img_path = save_uploaded_image(uploaded_file)
-        entry = add_entry(brand, model, rarity, img_path)
-
-        st.success(f"Secured {entry['brand']} {entry['name']}!")
-
-        # 🎉 Confetti animation
-        st.snow()
+        <style>
+        @keyframes slideDown {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
