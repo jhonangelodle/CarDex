@@ -1,36 +1,20 @@
 import streamlit as st
 from utils.db import add_entry
 from utils.images import save_uploaded_image
-from utils.layout import card_header
 
-st.set_page_config(page_title="CarDex - Add", page_icon="📸", layout="centered")
+st.set_page_config(page_title="Add Sighting", page_icon="📸")
 
-BRANDS = [
-    "McLaren", "Ferrari", "Lamborghini", "Porsche",
-    "Koenigsegg", "Pagani", "Bugatti", "Other"
-]
+st.title("📸 Add a New Car Sighting")
 
-RARITIES = ["Common", "Uncommon", "Rare", "Legendary", "Unicorn"]
+with st.form("add_car_form"):
+    brand = st.text_input("Brand")
+    model = st.text_input("Model")
+    rarity = st.selectbox("Rarity", ["Common", "Uncommon", "Rare", "Legendary", "Unicorn"])
+    uploaded_file = st.file_uploader("Upload a photo", type=["jpg", "jpeg", "png"])
 
-def main():
-    card_header()
-    st.subheader("📸 Log a New Sighting")
+    submitted = st.form_submit_button("Log Sighting")
 
-    with st.form("add_sighting_form", clear_on_submit=True):
-        uploaded_file = st.file_uploader("Upload Car Photo", type=["jpg", "jpeg", "png"])
-
-        brand_choice = st.selectbox("Brand", BRANDS)
-        if brand_choice == "Other":
-            brand = st.text_input("Type Brand Name")
-        else:
-            brand = brand_choice
-
-        model = st.text_input("Model Name")
-        rarity = st.selectbox("Rarity", RARITIES)
-
-        submitted = st.form_submit_button("LOG SIGHTING 🚀")
-
-     if submitted:
+if submitted:
     if not uploaded_file:
         st.error("Please upload a photo.")
     elif not brand:
@@ -45,6 +29,3 @@ def main():
 
         # 🎉 Confetti animation
         st.snow()
-
-if __name__ == "__main__":
-    main()
