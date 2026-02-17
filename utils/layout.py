@@ -92,3 +92,31 @@ def show_new_entry_banner():
         """,
         unsafe_allow_html=True
     )
+import streamlit as st
+
+def fire_celebration():
+    st.markdown(
+        """
+        <div style="
+            padding: 14px 20px;
+            background: #ff6a00;
+            color: white;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+            animation: popIn 0.4s ease-out;
+        ">
+            🔥 New Entry Registered! 🔥
+        </div>
+
+        <style>
+        @keyframes popIn {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
