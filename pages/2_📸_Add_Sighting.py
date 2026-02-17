@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.db import add_entry
 from utils.images import save_uploaded_image
-from utils.layout import show_new_entry_banner
+from utils.layout import fire_celebration
 
 st.set_page_config(page_title="Add Sighting", page_icon="📸")
 
@@ -28,8 +28,5 @@ if submitted:
 
         st.success(f"Secured {entry['brand']} {entry['name']}!")
 
-        # 🎉 Confetti animation
-        st.snow()
-
-        # 🚗 Animated banner
-        show_new_entry_banner()
+        # 🔥 Fire celebration banner
+        fire_celebration()
