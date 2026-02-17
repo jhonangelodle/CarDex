@@ -42,6 +42,15 @@ else:
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Gold glow for Unicorn cars */
+        .gold-glow {
+            border: 4px solid gold;
+            border-radius: 12px;
+            box-shadow: 0 0 20px gold, 0 0 40px rgba(255, 215, 0, 0.6);
+            padding: 10px;
+            display: inline-block;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -50,6 +59,18 @@ else:
     for idx, row in top5.iterrows():
         delay += 0.2  # stagger each reveal
 
+        # Optional crown for Unicorns
+        if row["rarity"] == "Unicorn":
+            st.markdown(
+                f"""
+                <div class="fade-in" style="animation-delay: {delay}s; font-size: 40px; text-align:center;">
+                    👑
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        # Title reveal
         st.markdown(
             f"""
             <div class="fade-in" style="animation-delay: {delay}s;">
@@ -59,24 +80,24 @@ else:
             unsafe_allow_html=True
         )
 
-        st.markdown(
-            f"""
-            <div class="fade-in" style="animation-delay: {delay + 0.1}s;">
-            """,
-            unsafe_allow_html=True
-        )
-        st.image(row["image_path"], width=350)
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Image reveal with gold glow for Unicorns
+        if row["rarity"] == "Unicorn":
+            st.markdown(
+                f"""
+                <div class="fade-in gold-glow" style="animation-delay: {delay + 0.1}s;">
+                """,
+                unsafe_allow_html=True
+            )
+            st.image(row["image_path"], width=350)
+            st.markdown("</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(
+                f"""
+                <div class="fade-in" style="animation-delay: {delay + 0.1}s;">
+                """,
+                unsafe_allow_html=True
+            )
+            st.image(row["image_path"], width=350)
+            st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("---")
-st.markdown("""
-    <style>
-    .gold-glow {
-        border: 4px solid gold;
-        border-radius: 12px;
-        box-shadow: 0 0 20px gold, 0 0 40px rgba(255, 215, 0, 0.6);
-        padding: 10px;
-        display: inline-block;
-    }
-    </style>
-""", unsafe_allow_html=True)
