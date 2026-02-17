@@ -31,7 +31,41 @@ else:
         ascending=[False, False]
     ).head(5)
 
+    # Fade-in animation CSS
+    st.markdown("""
+        <style>
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Display each car with staggered animation
+    delay = 0.0
     for idx, row in top5.iterrows():
-        st.markdown(f"## {row['rarity']} — {row['brand']} {row['name']}")
+        delay += 0.2  # stagger each reveal
+
+        st.markdown(
+            f"""
+            <div class="fade-in" style="animation-delay: {delay}s;">
+                <h2>{row['rarity']} — {row['brand']} {row['name']}</h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"""
+            <div class="fade-in" style="animation-delay: {delay + 0.1}s;">
+            """,
+            unsafe_allow_html=True
+        )
         st.image(row["image_path"], width=350)
+        st.markdown("</div>", unsafe_allow_html=True)
+
         st.markdown("---")
