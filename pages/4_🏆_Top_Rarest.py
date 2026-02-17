@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from utils.db import load_db
-from utils.layout import show_logo
 
 st.set_page_config(page_title="Top Rarest Cars", page_icon="🏆")
 
