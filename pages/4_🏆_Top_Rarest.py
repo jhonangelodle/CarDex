@@ -23,10 +23,10 @@ else:
     df["rarity_score"] = df["rarity"].map(rarity_order)
 
     # Sort by rarity, then newest first
-    top5 = df.sort_values(
-        ["rarity_score", "timestamp"], 
-        ascending=[False, False]
-    ).head(5)
+   top5 = df.sort_values(
+    ["rarity_score"], 
+    ascending=[False]
+).head(5)
 
     # Fade-in animation + gold glow CSS
     st.markdown("""
