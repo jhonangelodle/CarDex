@@ -69,3 +69,14 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("---")
+st.markdown("""
+    <style>
+    .gold-glow {
+        border: 4px solid gold;
+        border-radius: 12px;
+        box-shadow: 0 0 20px gold, 0 0 40px rgba(255, 215, 0, 0.6);
+        padding: 10px;
+        display: inline-block;
+    }
+    </style>
+""", unsafe_allow_html=True)
