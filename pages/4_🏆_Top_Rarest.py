@@ -4,8 +4,6 @@ from utils.db import load_db
 
 st.set_page_config(page_title="Top Rarest Cars", page_icon="🏆")
 
-show_logo()
-
 st.title("🏆 Top 5 Rarest Cars")
 
 df = load_db()
@@ -30,7 +28,7 @@ else:
         ascending=[False, False]
     ).head(5)
 
-    # Fade-in animation CSS
+    # Fade-in animation + gold glow CSS
     st.markdown("""
         <style>
         .fade-in {
@@ -42,7 +40,6 @@ else:
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Gold glow for Unicorn cars */
         .gold-glow {
             border: 4px solid gold;
             border-radius: 12px;
@@ -58,7 +55,7 @@ else:
     for idx, row in top5.iterrows():
         delay += 0.2  # stagger each reveal
 
-        # Optional crown for Unicorns
+        # Crown for Unicorns
         if row["rarity"] == "Unicorn":
             st.markdown(
                 f"""
