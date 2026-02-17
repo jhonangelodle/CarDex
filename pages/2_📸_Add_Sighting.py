@@ -30,7 +30,7 @@ def main():
 
         submitted = st.form_submit_button("LOG SIGHTING 🚀")
 
-      if submitted:
+     if submitted:
     if not uploaded_file:
         st.error("Please upload a photo.")
     elif not brand:
