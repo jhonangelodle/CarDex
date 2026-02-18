@@ -54,16 +54,91 @@ if "edit_index" in st.session_state:
         del st.session_state["edit_index"]
         st.rerun()
 
-    st.stop()  # IMPORTANT: prevents the rest of the page from rendering
+    st.stop()
 
 
 # -----------------------------
-# NORMAL CARDEX VIEW
+# FILTERS + SORTING
 # -----------------------------
-if df.empty:
-    st.info("No cars logged yet.")
+st.subheader("🔍 Filters & Sorting")
+
+colA, colB, colC, colD = st.columns(4)
+
+with colA:
+    brand_filter = st.selectbox(
+        "Brand",
+        ["All"] + sorted(df["brand"].dropna().unique().tolist())
+    )
+
+with colB:
+    rarity_filter = st.selectbox(
+        "Rarity",
+        ["All", "Common", "Uncommon", "Rare", "Legendary", "Unicorn"]
+    )
+
+with colC:
+    hof_filter = st.selectbox(
+        "Hall of Fame",
+        ["All", "Only HOF", "Exclude HOF"]
+    )
+
+with colD:
+    sort_by = st.selectbox(
+        "Sort By",
+        ["Newest", "Oldest", "Brand A→Z", "Brand Z→A", "Rarity Rank"]
+    )
+
+
+# -----------------------------
+# APPLY FILTERS
+# -----------------------------
+filtered_df = df.copy()
+
+if brand_filter != "All":
+    filtered_df = filtered_df[filtered_df["brand"] == brand_filter]
+
+if rarity_filter != "All":
+    filtered_df = filtered_df[filtered_df["rarity"] == rarity_filter]
+
+if hof_filter == "Only HOF":
+    filtered_df = filtered_df[filtered_df["hof"] == True]
+elif hof_filter == "Exclude HOF":
+    filtered_df = filtered_df[filtered_df["hof"] == False]
+
+
+# -----------------------------
+# APPLY SORTING
+# -----------------------------
+rarity_order = {
+    "Common": 1,
+    "Uncommon": 2,
+    "Rare": 3,
+    "Legendary": 4,
+    "Unicorn": 5
+}
+
+if sort_by == "Newest":
+    filtered_df = filtered_df.sort_values("time", ascending=False)
+elif sort_by == "Oldest":
+    filtered_df = filtered_df.sort_values("time", ascending=True)
+elif sort_by == "Brand A→Z":
+    filtered_df = filtered_df.sort_values("brand", ascending=True)
+elif sort_by == "Brand Z→A":
+    filtered_df = filtered_df.sort_values("brand", ascending=False)
+elif sort_by == "Rarity Rank":
+    filtered_df = filtered_df.sort_values(
+        by="rarity",
+        key=lambda col: col.map(rarity_order)
+    )
+
+
+# -----------------------------
+# DISPLAY CARDEX LIST
+# -----------------------------
+if filtered_df.empty:
+    st.info("No cars match your filters.")
 else:
-    for index, row in df.iterrows():
+    for index, row in filtered_df.iterrows():
         with st.container():
             st.subheader(f"{row['brand']} {row['name']} ({row['rarity']})")
 
@@ -77,19 +152,16 @@ else:
 
             col1, col2, col3 = st.columns(3)
 
-            # EDIT BUTTON
             with col1:
                 if st.button("✏️ Edit", key=f"edit_{index}"):
                     st.session_state["edit_index"] = index
                     st.rerun()
 
-            # DELETE BUTTON
             with col2:
                 if st.button("🗑 Delete", key=f"delete_{index}"):
                     delete_entry(row["id"])
                     st.rerun()
 
-            # HALL OF FAME BUTTON
             with col3:
                 if st.button("🏆 Add to Hall of Fame", key=f"hof_{index}"):
                     set_hof(row["id"], True)
