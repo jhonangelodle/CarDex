@@ -114,4 +114,4 @@ def update_entry(index, updated_data):
     df = load_db()
     for key, value in updated_data.items():
         df.at[index, key] = value
-    df.to_csv(DB_PATH, index=False)
+    df.to_csv(DB_FILE, index=False)
