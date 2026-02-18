@@ -7,6 +7,8 @@ st.title("📘 Your CarDex")
 
 df = load_db()
 
+st.write(list(df.columns))
+
 if df.empty:
     st.info("No cars logged yet.")
 else:
