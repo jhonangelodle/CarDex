@@ -1,87 +1,44 @@
-import os
 import streamlit as st
-from utils.db import load_db, delete_entry, set_hof
-from utils.images import delete_image
-from utils.layout import rarity_badge, card_header
+from utils.db import load_db, update_entry
 
-st.set_page_config(page_title="CarDex - Dex", page_icon="📘", layout="wide")
+st.set_page_config(page_title="CarDex", page_icon="📘")
 
-def main():
-    card_header()
-    st.subheader("📘 Car Dex")
+st.title("📘 Your CarDex")
 
-    df = load_db()
-    if df.empty:
-        st.info("No cars logged yet. Go to **📸 Add Sighting** to log your first one!")
-        return
+df = load_db()
 
-    # Filters
-    with st.sidebar:
-        st.header("🔎 Search & Filter")
-        search = st.text_input("Search brand or model")
-        rarity_options = sorted(df["rarity"].dropna().unique().tolist())
-        rarity_filter = st.multiselect("Filter by rarity", rarity_options, default=rarity_options)
-        sort_option = st.selectbox("Sort by", ["Newest", "Oldest", "Brand", "Rarity"])
+if df.empty:
+    st.info("No cars logged yet.")
+else:
+    # Show all logged cars
+    for index, row in df.iterrows():
+        with st.container():
+            st.subheader(f"{row['brand']} {row['name']} ({row['rarity']})")
+            st.image(row["image_path"], width=300)
 
-    filtered = df.copy()
+            # Edit button
+            if st.button("✏️ Edit", key=f"edit_{index}"):
+                st.session_state["edit_index"] = index
 
-    # Search filter
-    if search:
-        mask = (
-            filtered["brand"].str.contains(search, case=False, na=False) |
-            filtered["name"].str.contains(search, case=False, na=False)
+            st.markdown("---")
+
+    # If an edit button was clicked
+    if "edit_index" in st.session_state:
+        idx = st.session_state["edit_index"]
+        car = df.loc[idx]
+
+        st.header("✏️ Edit Car Entry")
+
+        # Pre-filled form
+        brand = st.text_input("Brand", value=car["brand"])
+        name = st.text_input("Model", value=car["name"])
+        rarity = st.selectbox(
+            "Rarity",
+            ["Common", "Uncommon", "Rare", "Legendary", "Unicorn"],
+            index=["Common", "Uncommon", "Rare", "Legendary", "Unicorn"].index(car["rarity"])
         )
-        filtered = filtered[mask]
 
-    # Rarity filter
-    if rarity_filter:
-        filtered = filtered[filtered["rarity"].isin(rarity_filter)]
-
-    # Sorting
-    if sort_option == "Newest":
-        filtered = filtered.sort_values("time", ascending=False)
-    elif sort_option == "Oldest":
-        filtered = filtered.sort_values("time", ascending=True)
-    elif sort_option == "Brand":
-        filtered = filtered.sort_values("brand", ascending=True)
-    elif sort_option == "Rarity":
-        filtered = filtered.sort_values("rarity", ascending=True)
-
-    if filtered.empty:
-        st.warning("No entries match your filters.")
-        return
-
-    # Card grid layout
-    cols = st.columns(3)
-    for i, (_, row) in enumerate(filtered.iterrows()):
-        col = cols[i % 3]
-        with col:
-            with st.container(border=True):
-                st.markdown(f"### {row['brand']} {row['name']}")
-                rarity_badge(row["rarity"])
-                st.write(f"🕒 {row['time']}")
-
-                # Image
-                if row["img_path"] and os.path.exists(str(row["img_path"])):
-                    st.image(row["img_path"], use_container_width=True)
-
-                # Hall of Fame toggle
-                if row.get("hof") == True:
-                    st.success("🌟 Hall of Fame")
-                    if st.button("Remove from Hall of Fame", key=f"remove_hof_{row['id']}"):
-                        set_hof(row["id"], False)
-                        st.rerun()
-                else:
-                    if st.button("Add to Hall of Fame ⭐", key=f"add_hof_{row['id']}"):
-                        set_hof(row["id"], True)
-                        st.rerun()
-
-                # Delete button
-                if st.button("🗑️ Delete Entry", key=f"delete_{row['id']}"):
-                    delete_image(row["img_path"])
-                    delete_entry(row["id"])
-                    st.success("Entry deleted.")
-                    st.rerun()
-
-if __name__ == "__main__":
-    main()
+        # Save button
+        if st.button("💾 Save Changes"):
+            update_entry(idx, {
+                "brand": brand,
