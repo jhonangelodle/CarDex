@@ -7,16 +7,14 @@ st.title("📘 Your CarDex")
 
 df = load_db()
 
-st.write(df.columns)
-
 if df.empty:
     st.info("No cars logged yet.")
 else:
     # Show all logged cars
     for index, row in df.iterrows():
         with st.container():
-            st.subheader(f"{row['brand']} {row['name']} ({row['rarity']})")
-            st.image(row["image_path"], width=300)
+            st.subheader(f"{row['Brand']} {row['name']} ({row['rarity']})")
+            st.image(row["img_path"], width=300)
 
             # Edit button
             if st.button("✏️ Edit", key=f"edit_{index}"):
@@ -31,8 +29,8 @@ else:
 
         st.header("✏️ Edit Car Entry")
 
-        # Pre-filled form
-        brand = st.text_input("Brand", value=car["brand"])
+        # Pre-filled form using your real column names
+        brand = st.text_input("Brand", value=car["Brand"])
         name = st.text_input("Model", value=car["name"])
         rarity = st.selectbox(
             "Rarity",
@@ -43,7 +41,7 @@ else:
         # Save button
         if st.button("💾 Save Changes"):
             update_entry(idx, {
-                "brand": brand,
+                "Brand": brand,
                 "name": name,
                 "rarity": rarity
             })
