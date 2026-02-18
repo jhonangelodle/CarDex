@@ -88,6 +88,13 @@ with colD:
         ["Newest", "Oldest", "Brand A→Z", "Brand Z→A", "Rarity Rank"]
     )
 
+# View mode selector
+view_mode = st.radio(
+    "View Mode",
+    ["List View", "Grid View"],
+    horizontal=True
+)
+
 
 # -----------------------------
 # APPLY FILTERS
@@ -133,39 +140,73 @@ elif sort_by == "Rarity Rank":
 
 
 # -----------------------------
+# GRID VIEW FUNCTION
+# -----------------------------
+def render_grid(df):
+    cols = st.columns(3)
+
+    for i, (idx, row) in enumerate(df.iterrows()):
+        col = cols[i % 3]
+
+        with col:
+            st.subheader(f"{row['brand']} {row['name']} ({row['rarity']})")
+
+            if row["rarity"] == "Unicorn":
+                st.markdown('<div class="gold-glow">', unsafe_allow_html=True)
+                st.image(row["img_path"], width=250)
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                st.image(row["img_path"], width=250)
+
+            if st.button("✏️ Edit", key=f"edit_grid_{i}"):
+                st.session_state["edit_index"] = idx
+                st.rerun()
+
+            if st.button("🗑 Delete", key=f"delete_grid_{i}"):
+                delete_entry(row["id"])
+                st.rerun()
+
+            if st.button("🏆 HOF", key=f"hof_grid_{i}"):
+                set_hof(row["id"], True)
+                st.rerun()
+
+
+# -----------------------------
 # DISPLAY CARDEX LIST
 # -----------------------------
 if filtered_df.empty:
     st.info("No cars match your filters.")
 else:
-    for index, row in filtered_df.iterrows():
-        with st.container():
-            st.subheader(f"{row['brand']} {row['name']} ({row['rarity']})")
+    if view_mode == "Grid View":
+        render_grid(filtered_df)
+    else:
+        for index, row in filtered_df.iterrows():
+            with st.container():
+                st.subheader(f"{row['brand']} {row['name']} ({row['rarity']})")
 
-            # GOLD GLOW FOR UNICORNS
-            if row["rarity"] == "Unicorn":
-                st.markdown('<div class="gold-glow">', unsafe_allow_html=True)
-                st.image(row["img_path"], width=300)
-                st.markdown('</div>', unsafe_allow_html=True)
-            else:
-                st.image(row["img_path"], width=300)
+                if row["rarity"] == "Unicorn":
+                    st.markdown('<div class="gold-glow">', unsafe_allow_html=True)
+                    st.image(row["img_path"], width=300)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                else:
+                    st.image(row["img_path"], width=300)
 
-            col1, col2, col3 = st.columns(3)
+                col1, col2, col3 = st.columns(3)
 
-            with col1:
-                if st.button("✏️ Edit", key=f"edit_{index}"):
-                    st.session_state["edit_index"] = index
-                    st.rerun()
+                with col1:
+                    if st.button("✏️ Edit", key=f"edit_{index}"):
+                        st.session_state["edit_index"] = index
+                        st.rerun()
 
-            with col2:
-                if st.button("🗑 Delete", key=f"delete_{index}"):
-                    delete_entry(row["id"])
-                    st.rerun()
+                with col2:
+                    if st.button("🗑 Delete", key=f"delete_{index}"):
+                        delete_entry(row["id"])
+                        st.rerun()
 
-            with col3:
-                if st.button("🏆 Add to Hall of Fame", key=f"hof_{index}"):
-                    set_hof(row["id"], True)
-                    st.success("Added to Hall of Fame!")
-                    st.rerun()
+                with col3:
+                    if st.button("🏆 Add to Hall of Fame", key=f"hof_{index}"):
+                        set_hof(row["id"], True)
+                        st.success("Added to Hall of Fame!")
+                        st.rerun()
 
-            st.markdown("---")
+                st.markdown("---")
