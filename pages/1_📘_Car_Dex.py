@@ -42,3 +42,14 @@ else:
         if st.button("💾 Save Changes"):
             update_entry(idx, {
                 "brand": brand,
+                "name": name,
+                "rarity": rarity
+            })
+            st.success("Car updated!")
+            del st.session_state["edit_index"]
+            st.rerun()
+
+        # Cancel button
+        if st.button("Cancel"):
+            del st.session_state["edit_index"]
+            st.rerun()
